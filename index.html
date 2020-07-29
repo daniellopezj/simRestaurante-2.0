@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/modules/Medias.js"></script>
+    <script src="./js/modules/Varianza.js"></script>
+
+    <title>Simulacion</title>
+</head>
+
+<body>
+    <div class="">
+        <div class="principal">
+            <div class="row header">
+                <div class="col-6">
+                    <div class="title ">
+                        <h2>Simulador Restaurante</h2>
+                    </div>
+                    <div class="buttons ">
+                        <Button class="begin-simulation btn btn-primary btn-lg" onclick="begin()"> Iniciar Simulacion </Button>
+                        <Button class="btn btn-danger btn-lg" onclick="refreshPage()"> Restaurar Valores </Button>
+                    </div>
+                </div>
+                <div class="col-6 nota">
+                    <h4>Nota</h4>
+                    <div class="d-flex">
+                        <ul class="col-6">
+                            <li type="disc"> <strong> P1:</strong> Bandeja Paisa.</li>
+                            <li type="disc"> <strong> P2:</strong> Cuchuco de Trigo.</li>
+                            <li type="disc"> <strong> P3:</strong> Paella a la Valenciana.</li>
+                            <li type="disc"><strong> P4:</strong> Arroz con pollo.</li>
+                        </ul>
+                        <ul class="col-6">
+                            <li type="disc"><strong> CC:</strong> Clientes que Calificaron.</li>
+                            <li type="disc"> <strong> NC:</strong> Numero Comensales.</li>
+                            <li type="disc"><strong> SC:</strong> Suma de Calificaciones.</li>
+                            <li type="disc"><strong> PP:</strong> Promedio de Calificaciones.</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+            <div id="results" class="style-results ">
+            </div>
+            <table id="tableData" class="table sticky-top">
+                <thead class="sticky-top">
+                    <tr>
+                        <th scope="col">Dia</th>
+                        <th scope="col">Horas</th>
+                        <th scope="col">Comensales</th>
+                        <th scope="col">NC. P1</th>
+                        <th scope="col">NC. P2</th>
+                        <th scope="col">NC. P3</th>
+                        <th scope="col">NC. P4</th>
+                        <th scope="col">CC. P1</th>
+                        <th scope="col">CC. P2</th>
+                        <th scope="col">CC. P3</th>
+                        <th scope="col">CC. P4</th>
+                        <th scope="col">SC. P1</th>
+                        <th scope="col">SC. P2</th>
+                        <th scope="col">SC. P3</th>
+                        <th scope="col">SC. P4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+</body>
+
+</html>
