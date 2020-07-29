@@ -93,8 +93,6 @@ callVarianze = (data) => {
     //limite superior
     let ls = va.getL(x2, n).toFixed(8);
 
-    console.log(`${varianza} ${ls} ${li}`)
     let prueba = va.prueba(varianza, ls, li);
-    console.log(prueba)
     return prueba;
 }
