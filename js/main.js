@@ -2,23 +2,26 @@ var currentHour = 0;
 var currentdiners = 0;
 var data = {};
 const limitHour = 150;
+const numberTables = 5;
+const m1 = 6;
+const m2 = 7;
 var dinersPlate = []; //seleccion por cada plato.
 var dinersQualified = []; //comensales que calificaron cada plato
 var valueCalifications = [];
-var diners = [];
+var globalDiners = [];
 var hours = [0];
-const columns = 15;
-var res = new Array(columns)
-for (let i = 0; i < columns; i++) {
-    res[i] = 0;
-}
+var tables = [];
 
 var day = 0;
 
-begin = async() => {
-   await loadArrayHours()
-    diners = await whitNumberLimit(200, 300, hours.length)
-    console.log(diners)
+begin = async () => {
+    await loadArrayHours()
+    globalDiners = await whitNumberLimit(200, 300, hours.length)
+    for (let i = 0; i < hours.length; i++) {
+        await emptyTables(); //empezar cada dia con mesas desocupadas
+        let currentTimeDiners = await whitNumberLimit(15, 30, globalDiners[i])
+        await beginSimulation(hours[i] * 60, currentTimeDiners)
+    }
     // let auxDinnerPlates, auxSumCalification;
     // for (let i = 0; i < hours.length; i++) {
     //     auxDinnerPlates = await beginMethodGeneral(0, 4, diners[i])
@@ -29,7 +32,29 @@ begin = async() => {
     // }
 }
 
-// /**METODO CUADRADOS */
+beginSimulation = async (minutes, diners) => {
+    // for (let i = 0; i < minutes; i++) {
+        currentEmptyTables = await checkTables()
+        console.log(currentEmptyTables)
+    // }
+}
+
+checkTables = async () => {
+    let array = []
+    for (let i = 0; i < numberTables; i++) {
+        if (tables[i][1] === 0) {
+            array.push(i)
+        }
+    }
+    return array
+}
+
+emptyTables = async () => {
+    for (let i = 0; i < numberTables; i++) {
+        tables.push([0, 0])
+    }
+}
+
 // generateCalifications = async(array) => {
 //     otherArray = [];
 //     for (let i = 0; i < array.length; i++) {
@@ -49,19 +74,7 @@ begin = async() => {
 //     return otherArray;
 // }
 
-
-// getExtrat = (string) => {
-//     string = `${string}`
-//     charactersPow = string.toString().length
-//     objectiveLenght = seed.toString().length * 2;
-//     if (charactersPow !== objectiveLenght) {
-//         let diference = objectiveLenght - charactersPow;
-//         string = '0'.repeat(diference) + string
-//     }
-//     return string.substring(objectiveLenght / 2 - k, objectiveLenght / 2 + k);
-// }
-
-loadArrayHours = async() => {
+loadArrayHours = async () => {
     await whitOutNumberLimit(10, 12, hours)
     return hours;
 }
@@ -84,6 +97,6 @@ loadArrayHours = async() => {
 //     return dinersCalificate;
 // }
 
-refreshPage = async() => {
+refreshPage = async () => {
     window.location.href = window.location.href;
 }
