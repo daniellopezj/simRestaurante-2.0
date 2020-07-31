@@ -1,18 +1,17 @@
 var currentHour = 0;
 var currentdiners = 0;
 var data = {};
-const limitHour = 250;
+const limitHour = 25;
 const numberTables = 5;
-const m1 = 6;
-const m2 = 7;
+var m1 = [0, 6];//mesero 1: posicion 0 estado disponible u ocupado, position 2, tiempo de atension
+var m2 = [0, 7];//mesero 2: posicion 0 estado disponible u ocupado, position 2, tiempo de atension
 var dinersPlate = []; //seleccion por cada plato.
 var dinersQualified = []; //comensales que calificaron cada plato
 var valueCalifications = [];
 var globalDiners = [];
 var hours = [0];
-var tables = [[0,0],[0,0],[0,0],[0,0],[0,0]];
+var tables = [];
 var currentTimeDiners = [];
-var day = 0;
 
 begin = async () => {
     await loadArrayHours()
@@ -39,7 +38,29 @@ beginSimulation = async (minutes) => {
         if (currentEmptyTables.length) {
             await occupyTable(currentEmptyTables)
         }
+        await attendTables()
+
         i++;
+    }
+}
+
+attendTables = async () => {
+    for (let i = 0; i < numberTables; i++) {
+        if (tables[i][0] === 1) {//si la mesa esta esperando para ser atendida
+            await availableWiter(i)
+        }
+    }
+}
+
+availableWiter = async (table) => { //disponibilidad de los meseros
+    if (m1[0] === 0) {
+        tables[table][0] = 2;
+        tables[table][3] = m1[1];
+        m1[0] = 1;
+    } else if (m2[0] === 0) {
+        tables[table][0] = 2;
+        tables[table][3] = m2[1];
+        m2[0] = 1;
     }
 }
 
@@ -47,12 +68,12 @@ occupyTable = async (emptyTables) => {
     for (let i = 0; i < emptyTables.length; i++) {
         if (currentTimeDiners.length) {
             let dinersForTable = (currentTimeDiners.length >= 3) ? await generateRandom(1, 3) : currentTimeDiners.length;
-             let timeForTable = await maxTimeEat(dinersForTable)
-            tables[emptyTables[i]] = [timeForTable,0];
+            let timeForTable = await maxTimeEat(dinersForTable)
+            tables[emptyTables[i]] = [1, dinersForTable, timeForTable, 0];
         }
     }
-    console.log(tables)
 }
+
 
 maxTimeEat = async (dinersForTable) => {
     let array = [];
@@ -62,20 +83,38 @@ maxTimeEat = async (dinersForTable) => {
     return Math.max.apply(Math, array);
 
 }
+
+
 checkTables = async () => {
     let array = []
-    for (let i = 0; i < tables.length; i++) {
+    for (let i = 0; i < numberTables; i++) {
         if (tables[i][0] === 0) {
             array.push(i)
         }
     }
+    // console.log(array)
     return array;
 }
 
-emptyTables = async () => {//[tiempo ocupada, estado de la mesa 0 =  libre 1 = en espera,  2 comiendo ]
+/**
+ * 
+ * Valores en array de mesas 
+ * position 0 =  estado de la mesa
+ *      estado 0 = mesa libre
+ *      estado 1 = mesa en espera
+ *      estado 2 = mesa siendo atendida
+ *      estado 3 = mesa comiendo
+ * position 1 =  numero de comensales
+ * position 2 =  tiempo maximo que se demoran los clientes
+ * position 3 =  tiempo de atension
+ * 
+ *   
+ */
+
+emptyTables = async () => {//[tiempo ocupada, estado de la mesa 0 =  libre 1 = en espera,2 atendiendo,  3 comiendo ]
     tables = [];
     for (let i = 0; i < numberTables; i++) {
-        tables[i] = [0, 0];
+        tables[i] = [0, 0, 0, 0];
     }
 }
 
