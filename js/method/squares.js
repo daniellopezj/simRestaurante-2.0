@@ -1,9 +1,10 @@
 
 const divisor = 10000
 const k = 2;
-let seed = 5456;
+let seed = 3652;
 
 whitOutNumberLimit = async(min, max, array) => {
+    seed = generateRandom(1000, 9999)
     do {
         let auxSeed = seed;
         let pow, extrat, ri;
@@ -33,6 +34,7 @@ whitOutNumberLimit = async(min, max, array) => {
 
 whitNumberLimit = async(min, max, limit) => {
     let array = []
+    seed = generateRandom(1000, 9999)
     do {
         array = []
         auxSeed = seed;
