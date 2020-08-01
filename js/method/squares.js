@@ -18,8 +18,12 @@ whitOutNumberLimit = async(min, max, array) => {
         }
         array.shift()
         if (await callMethodMedias(array)) {
-            if (await callMethodChi2(array, min, max)) {
-                if (await callVarianze(array)) {
+            if (await callMethodChi2(array)) {
+                if (array.length > 2) {
+                    if (await callVarianze(array)) {
+                        passTest = true
+                    }
+                } else {
                     passTest = true
                 }
             }
@@ -48,7 +52,7 @@ whitNumberLimit = async(min, max, limit) => {
             array.push(getNi(min, max, ri))
         }
         if (await callMethodMedias(array)) {
-            if (await callMethodMedias(array)) {
+            if (await callMethodChi2(array)) {
                 if (array.length > 2) {
                     if (await callVarianze(array)) {
                         passTest = true

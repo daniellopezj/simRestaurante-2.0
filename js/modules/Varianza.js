@@ -64,6 +64,10 @@ class Varianza {
 }
 
 callVarianze = (data) => {
+    if(data.length === 1){
+        return true;
+    }
+    console.log(data.length)
     var va = new Varianza();
     let r_i = va.normalizar(data);
     let aceptacion = 0.95;
