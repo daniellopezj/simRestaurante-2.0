@@ -14,13 +14,14 @@ var tables = [];
 var currentTimeDiners = [];
 
 begin = async () => {
-    await loadArrayHours()
+    hours = await whitOutNumberLimit(10, 12, hours)
     globalDiners = await whitNumberLimit(20, 30, hours.length)
     for (let i = 0; i < hours.length; i++) {
         await emptyTables(); //empezar cada dia con mesas desocupadas
         currentTimeDiners = await whitNumberLimit(15, 30, globalDiners[i])//tiempos de los comensales en ese dia.
         await beginSimulation(hours[i] * 60)
     }
+
     // let auxDinnerPlates, auxSumCalification;
     // for (let i = 0; i < hours.length; i++) {
     //     auxDinnerPlates = await beginMethodGeneral(0, 4, diners[i])
@@ -39,7 +40,7 @@ beginSimulation = async (minutes) => {
             await occupyTable(currentEmptyTables)
         }
         await attendTables()
-
+        console.log(tables)
         i++;
     }
 }
@@ -54,14 +55,18 @@ attendTables = async () => {
 
 availableWiter = async (table) => { //disponibilidad de los meseros
     if (m1[0] === 0) {
-        tables[table][0] = 2;
-        tables[table][3] = m1[1];
+        await beginAttended(m1[1], table)
         m1[0] = 1;
     } else if (m2[0] === 0) {
-        tables[table][0] = 2;
-        tables[table][3] = m2[1];
+        await beginAttended(m2[1], table)
         m2[0] = 1;
     }
+}
+
+beginAttended = async (mTime, table) => {//define el inicio para atender la mesa 
+    tables[table][0] = 2; //cambia la mesa a un estado de esta siendo atendida
+    tables[table][3] = mTime; //cuanto tiempo va a durar en este estado
+    tables[table][4] = await selectPlates(table)
 }
 
 occupyTable = async (emptyTables) => {
@@ -69,11 +74,12 @@ occupyTable = async (emptyTables) => {
         if (currentTimeDiners.length) {
             let dinersForTable = (currentTimeDiners.length >= 3) ? await generateRandom(1, 3) : currentTimeDiners.length;
             let timeForTable = await maxTimeEat(dinersForTable)
-            tables[emptyTables[i]] = [1, dinersForTable, timeForTable, 0];
+            tables[emptyTables[i]][0] = 1;
+            tables[emptyTables[i]][1] = dinersForTable;
+            tables[emptyTables[i]][2] = timeForTable;
         }
     }
 }
-
 
 maxTimeEat = async (dinersForTable) => {
     let array = [];
@@ -81,7 +87,6 @@ maxTimeEat = async (dinersForTable) => {
         array.push(currentTimeDiners.shift())
     }
     return Math.max.apply(Math, array);
-
 }
 
 
@@ -92,7 +97,6 @@ checkTables = async () => {
             array.push(i)
         }
     }
-    // console.log(array)
     return array;
 }
 
@@ -107,14 +111,14 @@ checkTables = async () => {
  * position 1 =  numero de comensales
  * position 2 =  tiempo maximo que se demoran los clientes
  * position 3 =  tiempo de atension
- * 
- *   
+ * position 4 =  platos por cada comensal
+ *
  */
 
 emptyTables = async () => {//[tiempo ocupada, estado de la mesa 0 =  libre 1 = en espera,2 atendiendo,  3 comiendo ]
     tables = [];
     for (let i = 0; i < numberTables; i++) {
-        tables[i] = [0, 0, 0, 0];
+        tables[i] = [0, 0, 0, 0, []];
     }
 }
 
@@ -137,19 +141,18 @@ emptyTables = async () => {//[tiempo ocupada, estado de la mesa 0 =  libre 1 = e
 //     return otherArray;
 // }
 
-loadArrayHours = async () => {
-    await whitOutNumberLimit(10, 12, hours)
-    return hours;
+//el plato que escogio cada comensal
+selectPlates = async (table) => {
+    let array = [], diners = tables[table][1],value
+    while (array.length < diners) {
+        value = await generateRandom(1,4)
+        if(!array.includes(value)){
+            array.push(value)
+        }
+    }
+    return array
 }
-
-// selectPlates = async(numberDiners) => { //el plato que escogio cada comensal
-//     let array = [0, 0, 0, 0];
-//     let integer;
-//     for (let i = 0; i < numberDiners.length; i++) {
-//         integer = parseInt(numberDiners[i])
-//         array[integer] = array[integer] + 1;
-//     }
-//     return array;
+// (tables[table][1] > 1) ? await whitNumberLimit(1, 4, tables[table][1]) : [await generateRandom(1, 3)]
 // }
 
 // calificatePlates = async(plate) => { // si el comensal califico o no el plato
