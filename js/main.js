@@ -1,10 +1,10 @@
 var currentHour = 0;
 var currentdiners = 0;
 var data = {};
-const limitHour = 25;
+const limitHour = 250;
 const numberTables = 5;
-var m1 = [0, 6];//mesero 1: posicion 0 estado disponible u ocupado, position 2, tiempo de atension
-var m2 = [0, 7];//mesero 2: posicion 0 estado disponible u ocupado, position 2, tiempo de atension
+var m1 = [0, 2];//mesero 1: posicion 0 estado disponible u ocupado, position 2, tiempo de atension
+var m2 = [0, 3];//mesero 2: posicion 0 estado disponible u ocupado, position 2, tiempo de atension
 var dinersPlate = []; //seleccion por cada plato.
 var dinersQualified = []; //comensales que calificaron cada plato
 var valueCalifications = [];
@@ -15,34 +15,29 @@ var currentTimeDiners = [];
 
 begin = async () => {
     hours = await whitOutNumberLimit(10, 12, hours)
-    globalDiners = await whitNumberLimit(20, 30, hours.length)
+    globalDiners = await whitNumberLimit(200, 300, hours.length)
     for (let i = 0; i < hours.length; i++) {
         await emptyTables(); //empezar cada dia con mesas desocupadas
         currentTimeDiners = await whitNumberLimit(15, 30, globalDiners[i])//tiempos de los comensales en ese dia.
         await beginSimulation(hours[i] * 60)
     }
-
-    // let auxDinnerPlates, auxSumCalification;
-    // for (let i = 0; i < hours.length; i++) {
-    //     auxDinnerPlates = await beginMethodGeneral(0, 4, diners[i])
-    //     dinersPlate[i] = await selectPlates(auxDinnerPlates)
-    //     dinersQualified[i] = await selectDinersCalifications(dinersPlate[i])
-    //     auxSumCalification = await generateCalifications(dinersQualified[i])
-    //     valueCalifications[i] = auxSumCalification
-    // }
 }
 
 beginSimulation = async (minutes) => {
     let i = 0;
+    console.log("*****************")
+    console.log("comensales en el dia",currentTimeDiners.length)
+    console.log("tiempo total de comensales",currentTimeDiners.reduce((a,b)=>a+b))
     while (i < minutes && currentTimeDiners.length) {
         currentEmptyTables = await checkTables() //mesas desocupadas
         if (currentEmptyTables.length) {
             await occupyTable(currentEmptyTables)
         }
         await attendTables()
-        console.log(tables)
+        await tablesInTimeAttend()
         i++;
     }
+    console.log("comensales que no alcansaron a comer",currentTimeDiners.length)
 }
 
 attendTables = async () => {
@@ -53,20 +48,43 @@ attendTables = async () => {
     }
 }
 
+tablesInTimeAttend = async () => {
+    for (let i = 0; i < numberTables; i++) {
+        if (tables[i][0] === 3) { //si la mesa esta en un estado de Comiendo.
+            if (tables[i][2] <= 0) {
+                tables[i][0] = 0; // aqui ya terminaron de comer y se desocupa nuevamente la mesa.
+            } else {
+                tables[i][2] = tables[i][2] - 1; //se le resta un minuto al tiempo de atension.
+            }
+        } else if (tables[i][0] === 2) { //determina esta siendo atendida
+            //la mesa ya fue atendida
+            //la mesa pasa a un estado de comiendo 
+            //se le resta un minuto al tiempo de atension.
+            if (tables[i][3] <= 0) {
+                tables[i][0] = 3;
+                (tables[i][4] === 1) ? m1[0] = 0 : m2[0] = 0;
+            } else {
+                tables[i][3]--;
+            }
+        }
+    }
+}
+
 availableWiter = async (table) => { //disponibilidad de los meseros
     if (m1[0] === 0) {
-        await beginAttended(m1[1], table)
+        await beginAttended(m1[1], 1, table)
         m1[0] = 1;
     } else if (m2[0] === 0) {
-        await beginAttended(m2[1], table)
+        await beginAttended(m2[1], 2, table)
         m2[0] = 1;
     }
 }
 
-beginAttended = async (mTime, table) => {//define el inicio para atender la mesa 
+beginAttended = async (mTime, waiter, table) => {//define el inicio para atender la mesa 
     tables[table][0] = 2; //cambia la mesa a un estado de esta siendo atendida
     tables[table][3] = mTime; //cuanto tiempo va a durar en este estado
-    tables[table][4] = await selectPlates(table)
+    tables[table][4] = waiter; //mesero que atendio la mesa
+    tables[table][5] = await selectPlates(table)
 }
 
 occupyTable = async (emptyTables) => {
@@ -111,12 +129,14 @@ checkTables = async () => {
  * position 1 =  numero de comensales
  * position 2 =  tiempo maximo que se demoran los clientes
  * position 3 =  tiempo de atension
- * position 4 =  platos por cada comensal
+ * position 4 =  mesero que atendio
+ * position 5 =  platos por cada comensal
  *
  */
 
 emptyTables = async () => {//[tiempo ocupada, estado de la mesa 0 =  libre 1 = en espera,2 atendiendo,  3 comiendo ]
     tables = [];
+    m1[0]=0;m2[0]=0;
     for (let i = 0; i < numberTables; i++) {
         tables[i] = [0, 0, 0, 0, []];
     }
@@ -143,10 +163,10 @@ emptyTables = async () => {//[tiempo ocupada, estado de la mesa 0 =  libre 1 = e
 
 //el plato que escogio cada comensal
 selectPlates = async (table) => {
-    let array = [], diners = tables[table][1],value
+    let array = [], diners = tables[table][1], value
     while (array.length < diners) {
-        value = await generateRandom(1,4)
-        if(!array.includes(value)){
+        value = await generateRandom(1, 4)
+        if (!array.includes(value)) {
             array.push(value)
         }
     }
