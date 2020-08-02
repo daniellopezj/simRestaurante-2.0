@@ -138,9 +138,9 @@ class Chi_2 {
 
 
 callMethodChi2 = (x_i) => {
-    if(data.length === 1){
-        return true;
-    }
+    // if(data.length === 1){
+    //     return true;
+    // }
     chi_2 = new Chi_2();
     //obtener el minimo de x_i
     let minData = chi_2.getMin(x_i);
