@@ -10,7 +10,6 @@ class Chi_2 {
         return nor;
     }
 
-
     getX_i(r_i, a, b) {
         var x_i = [];
         for (let index = 0; index < r_i.length; index++) {
@@ -31,8 +30,7 @@ class Chi_2 {
 
     // Obtener las frecuancias (lista de final)
     getInterval(min, max, numberInterval) {
-        var interval = [],
-            aux = min;
+        var interval = [], aux = min;
         for (let index = 0; index < numberInterval; index++) {
             let number = aux + (max - min) / numberInterval;
             interval[index] = parseFloat(number.toFixed(8));
@@ -139,17 +137,17 @@ class Chi_2 {
 }
 
 
-
-callMethodChi2 = (data, minNumber, maxNumber) => {
+callMethodChi2 = (x_i) => {
+    // if(data.length === 1){
+    //     return true;
+    // }
     chi_2 = new Chi_2();
-    let r_i = chi_2.normalizar(data);
-    let x_i = chi_2.getX_i(r_i, parseInt(minNumber), parseInt(maxNumber));
     //obtener el minimo de x_i
     let minData = chi_2.getMin(x_i);
     //obtener el maximo de x_i
     let maxData = chi_2.getMax(x_i);
     // obtener los intervalos finales
-    let final = chi_2.getInterval(minData, maxData, 8);
+    let final = chi_2.getInterval(minData, maxData, 4);
     //Obtener la frecuencia
     let frecObtenida = chi_2.getFrecuency(x_i, minData, final);
     //frecuencia esperada
@@ -165,5 +163,4 @@ callMethodChi2 = (data, minNumber, maxNumber) => {
     //Obtener el resultado
     var result = chi_2.getResult(prueba, total_chi);
     return result
-
 }

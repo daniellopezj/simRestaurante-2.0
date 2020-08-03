@@ -56,6 +56,9 @@ class Media {
 }
 
 callMethodMedias = (data) => {
+    if(data.length === 1){
+        return true;
+    }
     var me = new Media();
     let r_i = me.normalizar(data);
     let aceptacion = 0.95;
