@@ -1,4 +1,4 @@
-const limitHour = 50;
+const limitHour = 150;
 const numberTables = 5;
 const numberPlates = 4;
 const column = 12;
@@ -18,14 +18,21 @@ diners.fill(0)
 sumCalification.fill(0)
 
 begin = async () => {
+
     hours = await whitOutNumberLimit(10, 12, hours)
-    globalDiners = await whitNumberLimit(20, 30, hours.length)
+    globalDiners = await whitNumberLimit(200, 300, hours.length)
+    
     for (let i = 0; i < hours.length; i++) {
+      
         await startCalification()
         await emptyTables(); //empezar cada dia con mesas desocupadas
+      
         console.log("***************** ")
         console.log("dia", i + 1)
+
         currentTimeDiners = await whitNumberLimit(30, 40, globalDiners[i])//tiempos de los comensales en ese dia.
+        
+        
         await onlyDataRow(i);
         await beginSimulation(hours[i] * 60)
         allCalification.push(calificationDay);
@@ -34,6 +41,7 @@ begin = async () => {
         await drawRow()
     }
     await loadResult()
+    await drawReport()
     // await drawRowResult()
 }
 
@@ -50,10 +58,12 @@ beginSimulation = async (minutes) => {
     console.log("comensales en el dia", currentTimeDiners.length)
     // console.log("tiempo total de comensales", currentTimeDiners.reduce((a, b) => a + b))
     while (i < minutes) {
+
         currentEmptyTables = await checkTables() //mesas desocupadas
         if (currentEmptyTables.length) {
             await occupyTable(currentEmptyTables)
         }
+
         await attendTables()
         await tablesInTimeAttend()
         if (pendingTimePay) {
@@ -226,8 +236,8 @@ loadResult = async () => {
         }
     }
     for (let i = 0; i < diners.length; i++) {
-        row[5+i] = diners[i] 
-        row[9+i] = sumCalification[i]
+        row[5 + i] = diners[i]
+        row[9 + i] = sumCalification[i]
     }
     await drawRow(true)
 }
@@ -238,7 +248,7 @@ drawRow = async (res = false) => {
     var string = ''
     string += `<tr class="${(res) ? 'result' : ''}">`;
     for (let i = 0; i < row.length; i++) {
-        string += stringSingleData(row[i],  `${!res&&i>4?`index${i%4}`:'data'}`)
+        string += stringSingleData(row[i], `${!res && i > 4 ? `index${i % 4}` : 'data'}`)
     }
     string += `</tr>`;
     $('#tableData  tr:last')
@@ -248,6 +258,25 @@ drawRow = async (res = false) => {
 stringSingleData = (value, sendClass) => {
     return `<td class="${sendClass}">${parseFloat(value.toFixed(4))}</td>`
 };
+
+drawReport = async () => {
+    string = '';
+    let best = 0;
+    let position = 0;
+    let currentUtility = 0;
+    for (let i = 0; i < diners.length; i++) {
+        currentUtility = await utility(i)
+        if (currentUtility > best) {
+            best = currentUtility
+            position = i
+        }
+        string += `<h5 class="prom${i + 1}"> El plato P${i + 1} obtuvo una utilidad de <strong>$ ${currentUtility}</strong> pesos </h5> `;
+    }
+    string += `<h4>El plato mas rentable fue el plato <strong>p${position + 1},</strong> genero una utilidad de <strong>$ ${best}</strong> pesos</h4>`
+    $("#results").show().html(string);
+}
+
+utility = async (i) => diners[i] * prices[i] * .25
 
 refreshPage = async () => {
     window.location.href = window.location.href;

@@ -3,7 +3,7 @@ const divisor = 10000
 const k = 2;
 let seed = 3652;
 
-whitOutNumberLimit = async(min, max, array) => {
+whitOutNumberLimit = async (min, max, array) => {
     seed = generateRandom(1000, 9999)
     do {
         let auxSeed = seed;
@@ -17,14 +17,16 @@ whitOutNumberLimit = async(min, max, array) => {
             array.push(getNi(min, max, ri))
         }
         array.shift()
-        if (await callMethodMedias(array)) {
-            if (await callMethodChi2(array)) {
-                if (array.length > 2) {
-                    if (await callVarianze(array)) {
+        if (await pokerTest(array)) {
+            if (await callMethodMedias(array)) {
+                if (await callMethodChi2(array)) {
+                    if (array.length > 2) {
+                        if (await callVarianze(array)) {
+                            passTest = true
+                        }
+                    } else {
                         passTest = true
                     }
-                } else {
-                    passTest = true
                 }
             }
         }
@@ -36,7 +38,7 @@ whitOutNumberLimit = async(min, max, array) => {
     return array;
 }
 
-whitNumberLimit = async(min, max, limit) => {
+whitNumberLimit = async (min, max, limit) => {
     let array = []
     seed = generateRandom(1000, 9999)
     do {
@@ -51,14 +53,16 @@ whitNumberLimit = async(min, max, limit) => {
             ri = extrat / divisor;
             array.push(getNi(min, max, ri))
         }
-        if (await callMethodMedias(array)) {
-            if (await callMethodChi2(array)) {
-                if (array.length > 2) {
-                    if (await callVarianze(array)) {
+        if (await pokerTest(array)) {
+            if (await callMethodMedias(array)) {
+                if (await callMethodChi2(array)) {
+                    if (array.length > 2) {
+                        if (await callVarianze(array)) {
+                            passTest = true
+                        }
+                    } else {
                         passTest = true
                     }
-                } else {
-                    passTest = true
                 }
             }
         }
