@@ -18,14 +18,21 @@ diners.fill(0)
 sumCalification.fill(0)
 
 begin = async () => {
+
     hours = await whitOutNumberLimit(10, 12, hours)
     globalDiners = await whitNumberLimit(200, 300, hours.length)
+    
     for (let i = 0; i < hours.length; i++) {
+      
         await startCalification()
         await emptyTables(); //empezar cada dia con mesas desocupadas
+      
         console.log("***************** ")
         console.log("dia", i + 1)
+
         currentTimeDiners = await whitNumberLimit(30, 40, globalDiners[i])//tiempos de los comensales en ese dia.
+        
+        
         await onlyDataRow(i);
         await beginSimulation(hours[i] * 60)
         allCalification.push(calificationDay);
@@ -51,10 +58,12 @@ beginSimulation = async (minutes) => {
     console.log("comensales en el dia", currentTimeDiners.length)
     // console.log("tiempo total de comensales", currentTimeDiners.reduce((a, b) => a + b))
     while (i < minutes) {
+
         currentEmptyTables = await checkTables() //mesas desocupadas
         if (currentEmptyTables.length) {
             await occupyTable(currentEmptyTables)
         }
+
         await attendTables()
         await tablesInTimeAttend()
         if (pendingTimePay) {
